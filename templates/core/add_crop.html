@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Add New Crop{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: center; margin-top: 2rem;">
+    <div class="glass-panel" style="width: 100%; max-width: 600px;">
+        <h2 style="text-align: center; margin-bottom: 2rem;">Add New Crop</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label>{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                <small style="display: block; color: var(--text-muted); font-size: 0.8rem;">{{ field.help_text
+                    }}</small>
+                {% endif %}
+                {% if field.errors %}
+                <div style="color: #e74c3c; font-size: 0.9rem; margin-top: 0.2rem;">{{ field.errors.0 }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Save Crop</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('input, select, textarea').forEach(input => {
+        if (!input.classList.contains('form-control') && input.type !== 'submit' && input.type !== 'file') {
+            input.classList.add('form-control');
+        }
+    });
+</script>
+{% endblock %}

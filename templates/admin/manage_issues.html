@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Issues{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1><i class="fas fa-clipboard-list"></i> Manage Pollution Reports</h1>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-primary">Back to Admin</a>
+    </div>
+
+    <div class="glass-panel">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 2px solid rgba(255,255,255,0.1);">
+                    <th style="padding: 1rem; text-align: left;">Title</th>
+                    <th style="padding: 1rem; text-align: left;">Reported By</th>
+                    <th style="padding: 1rem; text-align: left;">Location</th>
+                    <th style="padding: 1rem; text-align: left;">Date</th>
+                    <th style="padding: 1rem; text-align: left;">Status</th>
+                    <th style="padding: 1rem; text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 1rem;">
+                        <strong>{{ report.title }}</strong>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem;">{{
+                            report.description|truncatewords:15 }}</p>
+                    </td>
+                    <td style="padding: 1rem;">{{ report.user.username|default:"Anonymous" }}</td>
+                    <td style="padding: 1rem;">{{ report.location|default:"N/A" }}</td>
+                    <td style="padding: 1rem;">{{ report.date_reported|date:"M d, Y" }}</td>
+                    <td style="padding: 1rem;">
+                        {% if report.status == 'PENDING' %}
+                        <span
+                            style="padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; background: rgba(241, 196, 15, 0.2); color: #f1c40f;">{{
+                            report.get_status_display }}</span>
+                        {% elif report.status == 'REVIEWED' %}
+                        <span
+                            style="padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; background: rgba(52, 152, 219, 0.2); color: #3498db;">{{
+                            report.get_status_display }}</span>
+                        {% else %}
+                        <span
+                            style="padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; background: rgba(46, 204, 113, 0.2); color: var(--primary-green);">{{
+                            report.get_status_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem; text-align: center;">
+                        <form method="post" action="{% url 'update_issue_status' report.pk %}" style="display: inline;">
+                            {% csrf_token %}
+                            <select name="status" onchange="this.form.submit()"
+                                style="padding: 0.5rem; border-radius: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;">
+                                <option value="PENDING" {% if report.status=='PENDING' %}selected{% endif %}>Pending
+                                </option>
+                                <option value="REVIEWED" {% if report.status=='REVIEWED' %}selected{% endif %}>Reviewed
+                                </option>
+                                <option value="RESOLVED" {% if report.status=='RESOLVED' %}selected{% endif %}>Resolved
+                                </option>
+                            </select>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                        No pollution reports found
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

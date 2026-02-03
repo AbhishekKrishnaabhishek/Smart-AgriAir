@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+    <!-- DEBUG: Enhanced Admin Dashboard Template v2.0 -->
+    <h2 style="margin-bottom: 2rem;"><i class="fas fa-user-shield"></i> Admin Dashboard</h2>
+
+    <!-- Analytics Cards -->
+    <div
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
+        <section class="glass-panel"
+            style="text-align: center; background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);">
+            <h3 style="color: #2b7a2b; margin-top: 0;"><i class="fas fa-seedling"></i> Total Crops</h3>
+            <p style="font-size: 32px; font-weight: 700; color: #1e5f1e; margin: 0;">{{ total_crops }}</p>
+        </section>
+
+        <section class="glass-panel"
+            style="text-align: center; background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);">
+            <h3 style="color: #e65100; margin-top: 0;"><i class="fas fa-exclamation-triangle"></i> Reports</h3>
+            <p style="font-size: 32px; font-weight: 700; color: #bf360c; margin: 0;">{{ total_reports }}</p>
+        </section>
+
+        <section class="glass-panel"
+            style="text-align: center; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);">
+            <h3 style="color: #1565c0; margin-top: 0;"><i class="fas fa-users"></i> Total Users</h3>
+            <p style="font-size: 32px; font-weight: 700; color: #0d47a1; margin: 0;">{{ total_users }}</p>
+        </section>
+
+        <section class="glass-panel"
+            style="text-align: center; background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);">
+            <h3 style="color: #f57f17; margin-top: 0;"><i class="fas fa-clock"></i> Pending</h3>
+            <p style="font-size: 32px; font-weight: 700; color: #f57f17; margin: 0;">{{ pending_reports }}</p>
+        </section>
+    </div>
+
+    <!-- Recent Pollution Reports -->
+    <section class="glass-panel" style="margin-bottom: 30px;">
+        <h3 style="margin-bottom: 1.5rem;"><i class="fas fa-clipboard-list"></i> Recent Pollution Reports</h3>
+        {% if reports %}
+        <ul style="list-style: none; padding: 0; margin: 0;">
+            {% for r in reports %}
+            <li
+                style="padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: start;">
+                <div style="flex: 1;">
+                    <strong style="color: var(--primary-green);"><i class="fas fa-map-marker-alt"></i> {{
+                        r.location|default:"No location" }}</strong>
+                    <p style="margin: 5px 0; color: var(--text-muted); font-size: 14px;">{{
+                        r.description|truncatechars:100 }}</p>
+                    <p style="margin: 0; color: var(--text-muted); font-size: 12px;">
+                        <i class="fas fa-calendar"></i> {{ r.date_reported|date:"d M, Y H:i" }} |
+                        <i class="fas fa-user"></i> {{ r.user.username|default:"Anonymous" }}
+                    </p>
+                </div>
+                <span style="padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; white-space: nowrap;
+                            {% if r.status == 'PENDING' %}background: rgba(241, 196, 15, 0.2); color: #f1c40f;
+                            {% elif r.status == 'REVIEWED' %}background: rgba(52, 152, 219, 0.2); color: #3498db;
+                            {% else %}background: rgba(46, 204, 113, 0.2); color: var(--primary-green);{% endif %}">
+                    {{ r.get_status_display }}
+                </span>
+            </li>
+            {% endfor %}
+        </ul>
+        <div style="text-align: center; margin-top: 1rem;">
+            <a href="{% url 'manage_issues' %}" class="btn btn-primary">View All Reports</a>
+        </div>
+        {% else %}
+        <p style="text-align: center; color: var(--text-muted); padding: 20px;">No pollution reports submitted yet.</p>
+        {% endif %}
+    </section>
+
+    <!-- Recent Crops Registered -->
+    <section class="glass-panel" style="margin-bottom: 30px;">
+        <h3 style="margin-bottom: 1.5rem;"><i class="fas fa-tractor"></i> Recent Crops Registered</h3>
+        {% if crops %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px;">
+            {% for c in crops %}
+            <div
+                style="background: rgba(46, 204, 113, 0.1); padding: 15px; border-radius: 8px; border-left: 4px solid var(--primary-green);">
+                <h4 style="color: var(--primary-green); margin-top: 0; margin-bottom: 0.5rem;">{{ c.name }}</h4>
+                <p style="margin: 5px 0; font-size: 13px; color: var(--text-muted);">
+                    <i class="fas fa-user"></i> <strong>Farmer:</strong> {{ c.user.username }}
+                </p>
+                {% if c.planted_date %}
+                <p style="margin: 5px 0; font-size: 13px; color: var(--text-muted);">
+                    <i class="fas fa-calendar"></i> <strong>Planted:</strong> {{ c.planted_date|date:"M d, Y" }}
+                </p>
+                {% endif %}
+                {% if c.soil_type %}
+                <p style="margin: 5px 0; font-size: 13px; color: var(--text-muted);">
+                    <i class="fas fa-mountain"></i> <strong>Soil:</strong> {{ c.soil_type }}
+                </p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="text-align: center; color: var(--text-muted); padding: 20px;">No crops registered yet.</p>
+        {% endif %}
+    </section>
+
+    <!-- Management Section -->
+    <section class="glass-panel" style="text-align: center;">
+        <h3 style="margin-bottom: 1.5rem;"><i class="fas fa-cog"></i> Management</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <a href="{% url 'manage_users' %}" class="btn btn-primary" style="padding: 1rem;">
+                <i class="fas fa-users-cog" style="display: block; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                Manage Users
+            </a>
+            <a href="{% url 'manage_issues' %}" class="btn btn-primary" style="padding: 1rem;">
+                <i class="fas fa-clipboard-list" style="display: block; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                Manage Issues
+            </a>
+            <a href="{% url 'dashboard' %}" class="btn btn-primary" style="padding: 1rem;">
+                <i class="fas fa-home" style="display: block; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                Back to Dashboard
+            </a>
+        </div>
+    </section>
+</div>
+{% endblock %}

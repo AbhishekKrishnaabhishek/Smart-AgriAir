@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
+    <div class="glass-panel" style="width: 100%; max-width: 450px;">
+        <h2 style="text-align: center; margin-bottom: 1rem;">Welcome Back</h2>
+        <p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem;">Select your login type</p>
+
+        <!-- Login Type Selection -->
+        <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+            <button type="button" class="login-type-btn active" data-type="farmer"
+                style="flex: 1; padding: 1rem; border: 2px solid var(--primary-green); background: rgba(46, 204, 113, 0.1); border-radius: 12px; cursor: pointer; transition: all 0.3s;">
+                <i class="fas fa-tractor"
+                    style="font-size: 1.5rem; color: var(--primary-green); display: block; margin-bottom: 0.5rem;"></i>
+                <strong style="color: var(--primary-green);">Farmer</strong>
+            </button>
+            <button type="button" class="login-type-btn" data-type="admin"
+                style="flex: 1; padding: 1rem; border: 2px solid #95a5a6; background: rgba(149, 165, 166, 0.1); border-radius: 12px; cursor: pointer; transition: all 0.3s;">
+                <i class="fas fa-user-shield"
+                    style="font-size: 1.5rem; color: #95a5a6; display: block; margin-bottom: 0.5rem;"></i>
+                <strong style="color: #95a5a6;">Admin</strong>
+            </button>
+        </div>
+
+        <form method="post" id="loginForm">
+            {% csrf_token %}
+            <input type="hidden" name="login_type" id="loginType" value="farmer">
+
+            {% for field in form %}
+            <div class="form-group">
+                <label>{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <div style="color: #e74c3c; font-size: 0.9rem; margin-top: 0.2rem;">{{ field.errors.0 }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+        </form>
+
+        <p style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
+            Don't have an account? <a href="{% url 'signup' %}" style="color: var(--primary-green);">Sign up</a>
+        </p>
+    </div>
+</div>
+
+<script>
+    // Add form-control class to inputs
+    document.querySelectorAll('input').forEach(input => {
+        if (!input.classList.contains('form-control') && input.type !== 'checkbox' && input.type !== 'submit' && input.type !== 'hidden') {
+            input.classList.add('form-control');
+        }
+    });
+
+    // Login type selection
+    const loginTypeBtns = document.querySelectorAll('.login-type-btn');
+    const loginTypeInput = document.getElementById('loginType');
+
+    loginTypeBtns.forEach(btn => {
+        btn.addEventListener('click', function () {
+            // Remove active class from all buttons
+            loginTypeBtns.forEach(b => {
+                b.classList.remove('active');
+                b.style.borderColor = '#95a5a6';
+                b.style.background = 'rgba(149, 165, 166, 0.1)';
+                const icon = b.querySelector('i');
+                const strong = b.querySelector('strong');
+                icon.style.color = '#95a5a6';
+                strong.style.color = '#95a5a6';
+            });
+
+            // Add active class to clicked button
+            this.classList.add('active');
+            const type = this.dataset.type;
+            loginTypeInput.value = type;
+
+            if (type === 'farmer') {
+                this.style.borderColor = 'var(--primary-green)';
+                this.style.background = 'rgba(46, 204, 113, 0.1)';
+                const icon = this.querySelector('i');
+                const strong = this.querySelector('strong');
+                icon.style.color = 'var(--primary-green)';
+                strong.style.color = 'var(--primary-green)';
+            } else {
+                this.style.borderColor = '#e67e22';
+                this.style.background = 'rgba(230, 126, 34, 0.1)';
+                const icon = this.querySelector('i');
+                const strong = this.querySelector('strong');
+                icon.style.color = '#e67e22';
+                strong.style.color = '#e67e22';
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Smart Farming for a Better Future</h1>
+    <p style="font-size: 1.2rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 2rem;">
+        Get real-time insights on AQI, Rainfall, and Crop suitability to maximize your yield. Designed for modern
+        farmers.
+    </p>
+    {% if not user.is_authenticated %}
+    <a href="{% url 'signup' %}" class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;">Get Started</a>
+    <a href="{% url 'login' %}" class="btn btn-outline"
+        style="font-size: 1.2rem; padding: 1rem 2rem; margin-left: 1rem;">Login</a>
+    {% else %}
+    <a href="{% url 'dashboard' %}" class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;">Go to
+        Dashboard</a>
+    {% endif %}
+</div>
+
+<div class="grid-3">
+    <div class="glass-panel">
+        <i class="fas fa-seedling" style="font-size: 2rem; color: var(--primary-green); margin-bottom: 1rem;"></i>
+        <h3>Crop Details</h3>
+        <p>Find detailed information about optimal conditions for various crops.</p>
+    </div>
+    <div class="glass-panel">
+        <i class="fas fa-cloud-rain" style="font-size: 2rem; color: var(--sky-blue); margin-bottom: 1rem;"></i>
+        <h3>Weather Insights</h3>
+        <p>Monitor AQI and Rainfall data to plan your farming activities better.</p>
+    </div>
+    <div class="glass-panel">
+        <i class="fas fa-bullhorn" style="font-size: 2rem; color: #f1c40f; margin-bottom: 1rem;"></i>
+        <h3>Expert Advisory</h3>
+        <p>Get timely alerts and expert advice to protect your crops.</p>
+    </div>
+</div>
+{% endblock %}

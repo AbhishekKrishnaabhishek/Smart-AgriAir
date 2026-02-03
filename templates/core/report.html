@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="glass-panel" style="margin-top: 2rem; text-align: center; padding: 4rem;">
+    <i class="fas fa-file-alt" style="font-size: 3rem; color: var(--sky-blue); margin-bottom: 1rem;"></i>
+    <h2>Agriculture Report</h2>
+    <p>Your monthly farming activity and environmental report is being generated.</p>
+    <a href="?download=csv" class="btn btn-primary" style="margin: 1rem auto; display: inline-block;">Download CSV
+        Report</a>
+</div>
+{% endblock %}

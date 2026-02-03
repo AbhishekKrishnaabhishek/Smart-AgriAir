@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Advisories{% endblock %}
+
+{% block content %}
+<h2 style="margin-top: 2rem;">Farming Advisories</h2>
+<div class="glass-panel">
+    {% for advisory in advisories %}
+    <div style="padding: 1.5rem; border-bottom: 1px solid var(--glass-border);">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <h3>{{ advisory.title }}</h3>
+            <span
+                style="padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; background: {% if advisory.severity == 'HIGH' %}rgba(231, 76, 60, 0.2){% elif advisory.severity == 'MEDIUM' %}rgba(241, 196, 15, 0.2){% else %}rgba(46, 204, 113, 0.2){% endif %}; color: {% if advisory.severity == 'HIGH' %}#e74c3c{% elif advisory.severity == 'MEDIUM' %}#f1c40f{% else %}#2ecc71{% endif %};">
+                {{ advisory.severity }}
+            </span>
+        </div>
+        <p style="margin: 0.5rem 0 1rem; color: #ecf0f1;">{{ advisory.content }}</p>
+        <div style="font-size: 0.9rem; color: var(--text-muted);">
+            Posted on {{ advisory.date_posted|date:"F j, Y, P" }}
+        </div>
+    </div>
+    {% empty %}
+    <p>No advisories at the moment.</p>
+    {% endfor %}
+</div>
+{% endblock %}

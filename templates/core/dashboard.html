@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div style="margin-top: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h2>Welcome back, {{ user.username }}!</h2>
+            <p class="text-muted">Here's your farm summary for {% now "F j, Y" %}</p>
+        </div>
+        <div class="glass-panel" style="padding: 1rem; border: 1px solid var(--primary-green);">
+            <form method="get" style="display: flex; gap: 0.5rem; align-items: center;">
+                <i class="fas fa-map-marker-alt" style="color: var(--primary-green);"></i>
+                <input type="text" name="city" placeholder="Enter City/Village" class="form-control"
+                    style="width: 150px; padding: 0.5rem; background: rgba(0,0,0,0.3);" value="{{ request.GET.city }}">
+                <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1rem;">Go</button>
+            </form>
+            <div style="margin-top: 0.5rem; font-size: 0.8rem; text-align: right; color: var(--text-muted);">
+                Data for: <strong>{{ current_city }}</strong>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div style="margin-top: 2rem;">
+    <h3><i class="fas fa-chart-line"></i> Tracked Crops</h3>
+    <div class="grid-3" style="margin-top: 1rem;">
+        {% if tracked_crops %}
+        {% for crop in tracked_crops %}
+        <div class="glass-panel stat-card" style="border: 1px solid var(--primary-green);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h4 style="margin: 0;">{{ crop.name }}</h4>
+                <span
+                    style="font-size: 0.8rem; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 4px;">Tracked</span>
+            </div>
+            <div style="margin-top: 1rem; font-size: 0.9rem;">
+                {% if crop.planted_date %}
+                <p style="margin: 4px 0;"><i class="fas fa-seedling"></i> Planted: {{ crop.planted_date }}</p>
+                {% endif %}
+                {% if crop.harvested_date %}
+                <p style="margin: 4px 0;"><i class="fas fa-calendar-check"></i> Harvest: {{ crop.harvested_date }}</p>
+                {% endif %}
+            </div>
+            <div style="margin-top: 1rem;">
+                <a href="{% url 'crop_detail' crop.pk %}" class="btn btn-outline"
+                    style="font-size: 0.8rem; width: 100%;">View Details</a>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="glass-panel" style="grid-column: 1 / -1; text-align: center; color: var(--text-muted);">
+            <p>No crops are currently being tracked. <a href="{% url 'add_crop' %}"
+                    style="color: var(--primary-green);">Add a crop</a> and check "Track" to see it here.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="grid-3">
+    <!-- AQI Widget -->
+    <div class="glass-panel stat-card">
+        <div class="stat-label">Air Quality Index</div>
+        <div class="stat-value {% if aqi < 100 %}good-aqi{% elif aqi < 200 %}moderate-aqi{% else %}bad-aqi{% endif %}">
+            {{ aqi }}
+        </div>
+        <p>
+            {% if aqi < 100 %}Good{% elif aqi < 200 %}Moderate{% else %}Poor{% endif %} Quality </p>
+    </div>
+
+    <!-- Rainfall Widget -->
+    <div class="glass-panel stat-card">
+        <div class="stat-label">Rainfall (Today)</div>
+        <div class="stat-value" style="color: var(--sky-blue);">
+            {{ rainfall }}<span style="font-size: 1rem;">mm</span>
+        </div>
+        <p>
+            {% if rainfall > 10 %}Heavy Rain{% elif rainfall > 0 %}Light Rain{% else %}No Rain{% endif %}
+        </p>
+    </div>
+
+    <!-- Quick Action -->
+    <div class="glass-panel stat-card">
+        <div class="stat-label">Actions</div>
+        <div style="margin-top: 1.5rem;">
+            <a href="{% url 'crop_list' %}" class="btn btn-outline" style="width: 100%; margin-bottom: 0.5rem;">Check
+                Crops</a>
+            <a href="{% url 'report' %}" class="btn btn-primary" style="width: 100%;">View Reports</a>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top: 3rem;">
+    <h3><i class="fas fa-bell"></i> Recent Advisories</h3>
+    <div class="glass-panel" style="margin-top: 1rem;">
+        {% if advisories %}
+        {% for advisory in advisories %}
+        <div style="border-bottom: 1px solid var(--glass-border); padding: 1rem 0;">
+            <div style="display:flex; justify-content:space-between;">
+                <h4 style="margin: 0;">{{ advisory.title }}</h4>
+                <span style="font-size: 0.8rem; opacity: 0.7;">{{ advisory.date_posted|date:"M d" }}</span>
+            </div>
+            <p style="margin: 0.5rem 0 0; opacity: 0.9;">{{ advisory.content|truncatewords:20 }}</p>
+            <span class="bad-aqi" style="font-size: 0.8rem;">Severity: {{ advisory.severity }}</span>
+        </div>
+        {% endfor %}
+        <div style="margin-top: 1rem; text-align: right;">
+            <a href="{% url 'advisory_list' %}" style="color: var(--primary-green);">View All ></a>
+        </div>
+        {% else %}
+        <p>No active advisories.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

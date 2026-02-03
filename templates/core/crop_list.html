@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Crops{% endblock %}
+
+{% block content %}
+<div class="glass-panel" style="margin-top: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <h2>Crop Database</h2>
+        <form method="get" action="" style="display: flex; gap: 0.5rem;">
+            <input type="text" name="q" placeholder="Search crops..." class="form-control" value="{{ request.GET.q }}">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
+        </form>
+    </div>
+
+    <div style="margin-top: 1rem; text-align: right;">
+        <a href="{% url 'add_crop' %}" class="btn btn-outline"><i class="fas fa-plus"></i> Add New Crop</a>
+    </div>
+
+    <div class="grid-3">
+        {% for crop in crops %}
+        <div class="glass-panel" style="padding: 1.5rem;">
+            <!-- Placeholder image if no image -->
+            <div
+                style="height: 150px; background: rgba(255,255,255,0.1); border-radius: 8px; margin-bottom: 1rem; display: flex; align-items: center; justify-content: center;">
+                {% if crop.image %}
+                <img src="{{ crop.image.url }}" alt="{{ crop.name }}"
+                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                {% else %}
+                <i class="fas fa-leaf" style="font-size: 3rem; opacity: 0.5;"></i>
+                {% endif %}
+            </div>
+            <h3>{{ crop.name }}</h3>
+            <p>{{ crop.description|truncatewords:15 }}</p>
+            <div style="margin-top: 1rem;">
+                <span
+                    style="font-size: 0.9rem; background: rgba(46, 204, 113, 0.2); padding: 0.2rem 0.6rem; border-radius: 4px; color: #2ecc71;">
+                    {{ crop.optimal_temp_min }}-{{ crop.optimal_temp_max }}°C
+                </span>
+            </div>
+            <a href="{% url 'crop_detail' crop.pk %}" class="btn btn-outline"
+                style="margin-top: 1rem; width: 100%; text-align: center;">View Details</a>
+            <!-- Note: For simplicity I'm linking back to list or create a detailed view if I had time, but let's stick to list for now or expand if user clicks -->
+        </div>
+        {% empty %}
+        <p>No crops found matching your search.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
